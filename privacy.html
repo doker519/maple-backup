@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Privacy Policy — Maple Backup</title>
+<style>
+    body {
+        font-family: -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif;
+        color: #333;
+        background: #fff;
+        max-width: 720px;
+        margin: 0 auto;
+        padding: 40px 20px 80px;
+        line-height: 1.6;
+    }
+
+    h1 {
+        font-size: 28px;
+        margin-bottom: 4px;
+    }
+
+    .updated {
+        color: #777;
+        font-size: 14px;
+        margin-bottom: 32px;
+    }
+
+    h2 {
+        font-size: 18px;
+        margin-top: 32px;
+        margin-bottom: 8px;
+        border-bottom: 1px solid #eee;
+        padding-bottom: 6px;
+    }
+
+    p {
+        margin: 0 0 14px;
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 12px 0 20px;
+        font-size: 14px;
+    }
+
+    th, td {
+        text-align: left;
+        padding: 8px 10px;
+        border: 1px solid #e0e0e0;
+        vertical-align: top;
+    }
+
+    th {
+        background: #f7f7f7;
+    }
+
+    a {
+        color: #467ecc;
+    }
+
+    .footer {
+        margin-top: 40px;
+        color: #777;
+        font-size: 13px;
+    }
+
+    .footer a {
+        color: #777;
+    }
+</style>
+</head>
+<body>
+
+<h1>Privacy Policy — Maple Backup</h1>
+<p class="updated">Last updated: 2026-09-02</p>
+
+<p>Maple Backup is a browser extension that automatically creates local, point-in-time backups of your bookmarks. This page explains what data the extension accesses, where it goes, and what it does not do.</p>
+
+<h2>What this extension accesses</h2>
+<p>Maple Backup uses your browser's Bookmarks API to read your bookmarks — titles, URLs, and folder structure — so it can create scheduled backups and let you view or export past versions.</p>
+
+<h2>Where your data is stored</h2>
+<p>All backups and settings are stored locally on your device, using your browser's built-in storage. Nothing is uploaded anywhere by default.</p>
+<p>Your preferences (backup frequency, display language) may sync across your own browser profile if you have your browser's own account sync feature turned on. That sync is handled entirely by your browser — Maple Backup does not operate or have access to that sync data.</p>
+
+<h2>What we do not do</h2>
+<p>This extension has no server of its own. It does not transmit your bookmarks, backups, or any other data to the developer. There is no analytics, tracking, or advertising code of any kind. The only exception is Google Drive, described below, and only if you choose to turn it on.</p>
+
+<h2>Cloud Backup (Google Drive) — optional</h2>
+<p>Maple Backup can optionally mirror your local backups to your own Google Drive. This is off by default and only starts after you explicitly click "Connect" in Preferences and sign in with your own Google account.</p>
+<p>When Cloud Backup is on, each backup (scheduled or manual) is also uploaded to a folder named "Maple Backup" in your own Google Drive, in the same bookmarks file format as the Download button produces. If Cloud Backup is off, nothing is ever uploaded.</p>
+<p>Maple Backup uses Google's <code>drive.file</code> permission scope, which is limited to files this extension itself creates. It cannot see, read, or modify any other file, folder, or content already in your Google Drive.</p>
+<p>Clicking "Disconnect" stops future uploads and revokes this extension's access to your Google account. Backups already uploaded to Drive are not deleted automatically — you can remove them yourself from Google Drive at any time.</p>
+<p>Maple Backup never reads from or restores directly out of Google Drive — Drive is only ever a one-way mirror. If you ever need a file back from there, you retrieve it yourself from drive.google.com.</p>
+
+<h2>Downloads</h2>
+<p>When you click Download on a backup, a bookmarks file is saved to your own device's Downloads folder, only when you explicitly request it. That file stays on your device and is never sent anywhere by the extension.</p>
+
+<h2>Permissions this extension requests</h2>
+<table>
+<tr><th>Permission</th><th>Why it's needed</th></tr>
+<tr><td>bookmarks</td><td>Read your bookmarks to create backups.</td></tr>
+<tr><td>storage</td><td>Store backup history and your preferences locally.</td></tr>
+<tr><td>alarms</td><td>Run the scheduled daily (or every N days) backup.</td></tr>
+<tr><td>unlimitedStorage</td><td>Allow backup history to grow beyond the browser's default storage limit.</td></tr>
+<tr><td>identity</td><td>Sign you in to your own Google account, only if you choose to connect Google Drive. Not used for anything else.</td></tr>
+</table>
+
+<h2>Changes to this policy</h2>
+<p>If this policy changes, the "Last updated" date above will be revised. Continued use of the extension after changes means you accept the updated policy.</p>
+
+<h2>Contact</h2>
+<p>Questions or concerns about this policy can be sent via the extension's feedback link on the Chrome Web Store listing, or see the <a href="https://doker519.github.io/maple-backup/">homepage</a> and <a href="https://doker519.github.io/maple-backup/terms.html">Terms of Service</a> for more.</p>
+
+<div class="footer">Maple Backup — <a href="https://doker519.github.io/maple-backup/">Home</a> — <a href="https://doker519.github.io/maple-backup/terms.html">Terms of Service</a></div>
+
+</body>
+</html>
