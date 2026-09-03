@@ -74,7 +74,7 @@
 <body>
 
 <h1>Privacy Policy — Maple Backup</h1>
-<p class="updated">Last updated: 2026-09-02</p>
+<p class="updated">Last updated: 2026-09-03</p>
 
 <p>Maple Backup is a browser extension that automatically creates local, point-in-time backups of your bookmarks. This page explains what data the extension accesses, where it goes, and what it does not do.</p>
 
@@ -83,17 +83,17 @@
 
 <h2>Where your data is stored</h2>
 <p>All backups and settings are stored locally on your device, using your browser's built-in storage. Nothing is uploaded anywhere by default.</p>
-<p>Your preferences (backup frequency, display language) may sync across your own browser profile if you have your browser's own account sync feature turned on. That sync is handled entirely by your browser — Maple Backup does not operate or have access to that sync data.</p>
+<p>Your preferences (backup frequency, display language) are stored locally on your device and are not synced by Maple Backup.</p>
 
 <h2>What we do not do</h2>
 <p>This extension has no server of its own. It does not transmit your bookmarks, backups, or any other data to the developer. There is no analytics, tracking, or advertising code of any kind. The only exception is Google Drive, described below, and only if you choose to turn it on.</p>
 
 <h2>Cloud Backup (Google Drive) — optional</h2>
-<p>Maple Backup can optionally mirror your local backups to your own Google Drive. This is off by default and only starts after you explicitly click "Connect" in Preferences and sign in with your own Google account.</p>
+<p>Maple Backup can optionally save copies of your local backups to your own Google Drive. This is off by default and only starts after you explicitly click "Connect" in Preferences and sign in with your own Google account.</p>
 <p>When Cloud Backup is on, each backup (scheduled or manual) is also uploaded to a folder named "Maple Backup" in your own Google Drive, in the same bookmarks file format as the Download button produces. If Cloud Backup is off, nothing is ever uploaded.</p>
-<p>Maple Backup uses Google's <code>drive.file</code> permission scope, which is limited to files this extension itself creates. It cannot see, read, or modify any other file, folder, or content already in your Google Drive.</p>
+<p>Maple Backup uses Google's <code>drive.file</code> permission scope. It only accesses the files and folders used by Maple Backup for Cloud Backup, and does not access other files in your Google Drive.</p>
 <p>Clicking "Disconnect" stops future uploads and revokes this extension's access to your Google account. Backups already uploaded to Drive are not deleted automatically — you can remove them yourself from Google Drive at any time.</p>
-<p>Maple Backup never reads from or restores directly out of Google Drive — Drive is only ever a one-way mirror. If you ever need a file back from there, you retrieve it yourself from drive.google.com.</p>
+<p>Maple Backup never downloads or restores your backup contents from Google Drive. Drive is used only as a one-way backup destination — if you ever need a file back from there, you retrieve it yourself from drive.google.com.</p>
 
 <h2>Downloads</h2>
 <p>When you click Download on a backup, a bookmarks file is saved to your own device's Downloads folder, only when you explicitly request it. That file stays on your device and is never sent anywhere by the extension.</p>

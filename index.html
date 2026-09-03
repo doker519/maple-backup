@@ -4,105 +4,681 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Maple Backup</title>
+<meta name="description" content="A free Chrome extension that automatically backs up your bookmarks, with an optional copy to your own Google Drive.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
-    body {
-        font-family: -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif;
-        color: #333;
-        background: #fff;
-        max-width: 720px;
-        margin: 0 auto;
-        padding: 40px 20px 80px;
-        line-height: 1.6;
-    }
+  :root {
+    --bg: #fdfbf8;
+    --bg-elevated: #f6f0e9;
+    --bg-card: #ffffff;
+    --border: #ece2d7;
+    --border-hover: #ddccbb;
+    --text: #221a14;
+    --text-dim: #6f6156;
+    --text-faint: #a8988a;
+    --accent: #fa4a0b;
+    --accent-btn: #bd5028;
+    --accent-dim: #c23a07;
+    --accent-glow: rgba(250, 74, 11, 0.09);
+    --blue: #3b5bdb;
+    --mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Consolas, monospace;
+    --sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  }
 
-    h1 {
-        font-size: 28px;
-        margin-bottom: 4px;
-    }
+  * { box-sizing: border-box; }
 
-    .updated {
-        color: #777;
-        font-size: 14px;
-        margin-bottom: 32px;
-    }
+  html { scroll-behavior: smooth; }
 
-    h2 {
-        font-size: 18px;
-        margin-top: 32px;
-        margin-bottom: 8px;
-        border-bottom: 1px solid #eee;
-        padding-bottom: 6px;
-    }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--sans);
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
 
-    p {
-        margin: 0 0 14px;
-    }
+  a { color: inherit; text-decoration: none; }
 
-    ul {
-        margin: 0 0 14px;
-        padding-left: 22px;
-    }
+  .wrap {
+    max-width: 1080px;
+    margin: 0 auto;
+    padding: 0 24px;
+  }
 
-    li {
-        margin: 0 0 6px;
-    }
+  code, .mono { font-family: var(--mono); }
 
-    a {
-        color: #467ecc;
-    }
+  .comment {
+    font-family: var(--mono);
+    font-size: 13px;
+    color: var(--accent-dim);
+    letter-spacing: 0.02em;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
 
-    .cta {
-        display: inline-block;
-        margin: 6px 0 10px;
-        padding: 10px 18px;
-        background: #467ecc;
-        color: #fff;
-        border-radius: 6px;
-        text-decoration: none;
-        font-size: 15px;
-    }
+  .comment::before { content: "//"; color: var(--text-faint); }
 
-    .footer {
-        margin-top: 40px;
-        color: #777;
-        font-size: 13px;
-    }
+  /* ---------- Nav ---------- */
+  header {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: rgba(253, 251, 248, 0.85);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--border);
+  }
 
-    .footer a {
-        color: #777;
-    }
+  nav {
+    max-width: 1080px;
+    margin: 0 auto;
+    padding: 16px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: 700;
+    font-size: 17px;
+  }
+
+  .brand-icon {
+    width: 28px;
+    height: 28px;
+    border-radius: 7px;
+    display: block;
+  }
+
+  .nav-links {
+    display: flex;
+    gap: 28px;
+    font-size: 14px;
+    color: var(--text-dim);
+  }
+
+  .nav-links a:hover { color: var(--text); }
+
+  .nav-cta {
+    background: var(--accent-btn);
+    color: #fff;
+    padding: 8px 16px;
+    border-radius: 6px;
+    font-weight: 600;
+    font-size: 14px;
+    white-space: nowrap;
+  }
+
+  .nav-cta:hover { background: var(--accent); }
+
+  .nav-toggle {
+    display: none;
+    background: none;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    color: var(--text);
+    width: 36px;
+    height: 36px;
+    font-size: 16px;
+    cursor: pointer;
+  }
+
+  .mobile-menu {
+    display: none;
+    flex-direction: column;
+    gap: 2px;
+    padding: 0 24px 16px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .mobile-menu.open { display: flex; }
+
+  .mobile-menu a {
+    padding: 10px 4px;
+    color: var(--text-dim);
+    font-size: 14px;
+    border-top: 1px solid var(--border);
+  }
+
+  /* ---------- Hero ---------- */
+  .hero {
+    padding: 88px 0 72px;
+    text-align: center;
+  }
+
+  .terminal-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-family: var(--mono);
+    font-size: 13px;
+    color: var(--accent-dim);
+    background: var(--bg-elevated);
+    border: 1px solid var(--border);
+    padding: 6px 14px;
+    border-radius: 20px;
+    margin-bottom: 28px;
+  }
+
+  .dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--accent);
+    box-shadow: 0 0 8px var(--accent);
+    animation: pulse 2s ease-in-out infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.35; }
+  }
+
+  h1 {
+    font-size: clamp(34px, 5.5vw, 58px);
+    line-height: 1.08;
+    margin: 0 0 20px;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+  }
+
+  h1 .accent { color: var(--accent); }
+
+  .hero-sub {
+    font-size: 18px;
+    color: var(--text-dim);
+    max-width: 560px;
+    margin: 0 auto 36px;
+  }
+
+  .hero-cta {
+    display: flex;
+    gap: 14px;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-bottom: 20px;
+  }
+
+  .btn {
+    padding: 13px 26px;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 15px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.15s ease;
+    cursor: pointer;
+    border: none;
+  }
+
+  .btn-primary {
+    background: var(--accent-btn);
+    color: #fff;
+  }
+
+  .btn-primary:hover { background: var(--accent); transform: translateY(-1px); }
+
+  .btn-secondary {
+    background: transparent;
+    color: var(--text);
+    border: 1px solid var(--border);
+  }
+
+  .btn-secondary:hover { border-color: var(--border-hover); background: var(--bg-elevated); }
+
+  .hero-meta {
+    font-family: var(--mono);
+    font-size: 13px;
+    color: var(--text-faint);
+  }
+
+  /* ---------- Terminal preview ---------- */
+  .terminal {
+    max-width: 640px;
+    margin: 56px auto 0;
+    background: #1c150f;
+    border: 1px solid #33261a;
+    border-radius: 10px;
+    overflow: hidden;
+    text-align: left;
+    box-shadow: 0 24px 48px -18px rgba(34, 20, 8, 0.35);
+  }
+
+  .terminal-bar {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 11px 14px;
+    background: #241a12;
+    border-bottom: 1px solid #33261a;
+  }
+
+  .terminal-bar span {
+    width: 10px; height: 10px; border-radius: 50%;
+  }
+  .terminal-bar span:nth-child(1) { background: #ff5f56; }
+  .terminal-bar span:nth-child(2) { background: #ffbd2e; }
+  .terminal-bar span:nth-child(3) { background: #27c93f; }
+
+  .terminal-body {
+    padding: 20px 22px;
+    font-family: var(--mono);
+    font-size: 13.5px;
+    color: #a8988a;
+  }
+
+  .terminal-body .prompt { color: var(--accent); }
+  .terminal-body .line { margin-bottom: 6px; }
+  .terminal-body .out { color: #f3ece3; padding-left: 0; }
+  .terminal-body .ok { color: var(--accent); }
+  .terminal-body .cursor {
+    display: inline-block;
+    width: 7px; height: 15px;
+    background: var(--accent);
+    vertical-align: middle;
+    animation: blink 1s step-end infinite;
+  }
+  @keyframes blink { 50% { opacity: 0; } }
+
+  /* ---------- Sections ---------- */
+  section { padding: 88px 0; border-top: 1px solid var(--border); }
+
+  .section-head { margin-bottom: 44px; }
+
+  h2 {
+    font-size: clamp(26px, 3.5vw, 34px);
+    margin: 0 0 12px;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+  }
+
+  .section-desc { color: var(--text-dim); font-size: 16px; max-width: 560px; }
+
+  /* ---------- Feature grid ---------- */
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 18px;
+  }
+
+  .card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 26px;
+    transition: border-color 0.15s ease, transform 0.15s ease, box-shadow 0.15s ease;
+  }
+
+  .card:hover {
+    border-color: var(--border-hover);
+    transform: translateY(-2px);
+    box-shadow: 0 10px 28px -16px rgba(34, 20, 8, 0.18);
+  }
+
+  .card-icon {
+    width: 38px;
+    height: 38px;
+    border-radius: 9px;
+    background: var(--accent-glow);
+    color: var(--accent-dim);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    margin-bottom: 16px;
+  }
+
+  .card h3 { font-size: 16px; margin: 0 0 8px; font-weight: 600; }
+  .card p { font-size: 14px; color: var(--text-dim); margin: 0; }
+
+  /* ---------- Cloud backup / permission callout ---------- */
+  .callout {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 36px;
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 24px;
+    align-items: start;
+  }
+
+  .callout-badge {
+    font-family: var(--mono);
+    font-size: 12px;
+    background: var(--accent-glow);
+    color: var(--accent-dim);
+    border: 1px solid var(--accent-dim);
+    padding: 5px 10px;
+    border-radius: 6px;
+    white-space: nowrap;
+  }
+
+  .callout h3 { margin: 0 0 10px; font-size: 18px; }
+  .callout p { color: var(--text-dim); font-size: 15px; margin: 0 0 10px; }
+  .callout code {
+    background: var(--bg-elevated);
+    border: 1px solid var(--border);
+    padding: 1px 6px;
+    border-radius: 4px;
+    font-size: 13px;
+    color: var(--blue);
+  }
+
+  .scope-list {
+    list-style: none;
+    padding: 0;
+    margin: 16px 0 0;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .scope-list li {
+    font-size: 14px;
+    color: var(--text-dim);
+    display: flex;
+    gap: 10px;
+  }
+
+  .scope-list li::before {
+    content: "✓";
+    color: var(--accent-dim);
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+
+  /* ---------- FAQ ---------- */
+  .faq-item {
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    margin-bottom: 10px;
+    overflow: hidden;
+    background: var(--bg-card);
+  }
+
+  .faq-q {
+    width: 100%;
+    text-align: left;
+    background: none;
+    border: none;
+    color: var(--text);
+    padding: 18px 20px;
+    font-size: 15px;
+    font-weight: 600;
+    font-family: var(--sans);
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .faq-q:hover { color: var(--accent-dim); }
+
+  .faq-icon {
+    font-family: var(--mono);
+    color: var(--text-faint);
+    font-size: 18px;
+    transition: transform 0.2s ease;
+    flex-shrink: 0;
+  }
+
+  .faq-item.open .faq-icon { transform: rotate(45deg); color: var(--accent-dim); }
+
+  .faq-a {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.25s ease, padding 0.25s ease;
+    color: var(--text-dim);
+    font-size: 14.5px;
+    padding: 0 20px;
+  }
+
+  .faq-item.open .faq-a {
+    max-height: 240px;
+    padding: 0 20px 20px;
+  }
+
+  /* ---------- Footer ---------- */
+  footer {
+    border-top: 1px solid var(--border);
+    padding: 40px 0;
+  }
+
+  .footer-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 16px;
+  }
+
+  .footer-links {
+    display: flex;
+    gap: 22px;
+    font-size: 13.5px;
+    color: var(--text-dim);
+  }
+
+  .footer-links a:hover { color: var(--text); }
+
+  .footer-brand {
+    font-family: var(--mono);
+    font-size: 13px;
+    color: var(--text-faint);
+  }
+
+  /* ---------- Responsive ---------- */
+  @media (max-width: 760px) {
+    .nav-links { display: none; }
+    .nav-toggle { display: block; }
+    .grid { grid-template-columns: 1fr; }
+    .callout { grid-template-columns: 1fr; }
+    section { padding: 64px 0; }
+    .hero { padding: 56px 0 48px; }
+  }
+
+  /* ---------- Focus & motion ---------- */
+  a:focus-visible,
+  button:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 3px;
+    border-radius: 4px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    .dot, .cursor { animation: none; opacity: 1; }
+    .card, .btn-primary { transition: none; }
+  }
 </style>
 </head>
 <body>
 
-<h1>Maple Backup</h1>
-<p class="updated">Bookmarks, backed up automatically.</p>
+<header>
+  <nav>
+    <div class="brand">
+      <img class="brand-icon" src="data:image/png;base64,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" alt="Maple Backup">
+      Maple Backup
+    </div>
+    <div class="nav-links">
+      <a href="#features">Features</a>
+      <a href="#cloud">Cloud Backup</a>
+      <a href="#faq">FAQ</a>
+    </div>
+    <a class="nav-cta" href="https://chromewebstore.google.com/detail/eocfcfklbhdgkilphhkcpcgaollminlf" target="_blank" rel="noopener">Add to Chrome</a>
+    <button class="nav-toggle" id="navToggle" aria-label="Toggle menu">☰</button>
+  </nav>
+  <div class="mobile-menu" id="mobileMenu">
+    <a href="#features">Features</a>
+    <a href="#cloud">Cloud Backup</a>
+    <a href="#faq">FAQ</a>
+  </div>
+</header>
 
-<p>Maple Backup is a free Chrome extension that quietly keeps dated snapshots of your bookmarks in the background, so an accidental deletion, a bad sync, or a wiped profile never has to mean losing them for good.</p>
+<main>
+  <section class="hero" style="border-top:none">
+    <div class="wrap">
+      <div class="terminal-tag"><span class="dot"></span> free &amp; open by design</div>
+      <h1>Bookmarks, backed up<br>automatically.</h1>
+      <p class="hero-sub">Maple Backup saves your bookmarks automatically. Backups are made at the frequency you choose — with an optional copy to your own Google Drive.</p>
+      <div class="hero-cta">
+        <a class="btn btn-primary" href="https://chromewebstore.google.com/detail/eocfcfklbhdgkilphhkcpcgaollminlf" target="_blank" rel="noopener">Add to Chrome — it's free</a>
+        <a class="btn btn-secondary" href="#features">See how it works</a>
+      </div>
+      <div class="hero-meta">no account required · 15 languages · zero tracking</div>
 
-<a class="cta" href="https://chromewebstore.google.com/detail/eocfcfklbhdgkilphhkcpcgaollminlf">Get it on the Chrome Web Store</a>
+      <div class="terminal">
+        <div class="terminal-bar"><span></span><span></span><span></span></div>
+        <div class="terminal-body">
+          <div class="line"><span class="prompt">$</span> maple-backup --status</div>
+          <div class="line out">Last backup: today, 09:12 <span class="ok">✓</span></div>
+          <div class="line out">Bookmarks saved: 163</div>
+          <div class="line out">Cloud Backup: connected (Google Drive)</div>
+          <div class="line"><span class="prompt">$</span> <span class="cursor"></span></div>
+        </div>
+      </div>
+    </div>
+  </section>
 
-<h2>What it does</h2>
-<ul>
-<li>Automatically saves a snapshot of your bookmarks on a schedule you choose — every 1 to 7 days.</li>
-<li>Keeps a browsable history of past backups, so you can look back at what your bookmarks looked like on any saved date.</li>
-<li>Lets you restore any past snapshot back into your browser, or download it as a standalone HTML file at any time.</li>
-<li>Optionally mirrors every backup to a folder in your own Google Drive, so a copy exists outside the browser too.</li>
-<li>Supports 15 interface languages.</li>
-</ul>
+  <section id="features">
+    <div class="wrap">
+      <div class="section-head">
+        <div class="comment">features</div>
+        <h2>Everything backup should be. Nothing it shouldn't.</h2>
+        <p class="section-desc">No account. No dashboard to configure. Your bookmarks stay on your device unless you choose to back them up to your own Google Drive.</p>
+      </div>
+      <div class="grid">
+        <div class="card">
+          <div class="card-icon">⏱</div>
+          <h3>Creates backups automatically</h3>
+          <p>Runs on a schedule you choose — every 1 to 7 days — in the background. Nothing to remember, nothing to click.</p>
+        </div>
+        <div class="card">
+          <div class="card-icon">💾</div>
+          <h3>Saved safely on your device</h3>
+          <p>Every backup is stored locally first. Browse the full history, view any past snapshot, or download it as a standalone file.</p>
+        </div>
+        <div class="card">
+          <div class="card-icon">↺</div>
+          <h3>Restore in one click</h3>
+          <p>Pick any past backup and restore it into a new "Imported" folder — your current bookmarks are never touched or overwritten.</p>
+        </div>
+        <div class="card">
+          <div class="card-icon">☁</div>
+          <h3>Optional Google Drive backup</h3>
+          <p>Turn it on and every backup is also saved to your own Drive — off by default, disconnect anytime.</p>
+        </div>
+        <div class="card">
+          <div class="card-icon">🌐</div>
+          <h3>15 languages</h3>
+          <p>The full interface is translated, not machine-patched — reviewed language by language.</p>
+        </div>
+        <div class="card">
+          <div class="card-icon">◎</div>
+          <h3>No tracking, ever</h3>
+          <p>No analytics, no telemetry, no server of our own. Your bookmarks never leave your device unless you decide otherwise.</p>
+        </div>
+      </div>
+    </div>
+  </section>
 
-<h2>How it works</h2>
-<p>Everything runs locally in your own browser — your bookmarks and backup history are stored on your own device using Chrome's built-in storage, not on a server we run. Cloud Backup to Google Drive is entirely optional, off by default, and only starts once you explicitly connect your own Google account.</p>
-<p>See the <a href="https://maplebackup.9pass.online/privacy.html">Privacy Policy</a> for exactly what the extension accesses and what it never does, or the <a href="https://maplebackup.9pass.online/terms.html">Terms of Service</a>.</p>
+  <section id="cloud">
+    <div class="wrap">
+      <div class="section-head">
+        <div class="comment">cloud backup</div>
+        <h2>Your Google Drive, on your terms.</h2>
+        <p class="section-desc">Cloud Backup is opt-in and uses Google's <code>drive.file</code> scope for limited Drive access.</p>
+      </div>
+      <div class="callout">
+        <div class="callout-badge">drive.file scope</div>
+        <div>
+          <h3>Maple Backup only accesses the backup files it creates</h3>
+          <p>Maple Backup uses Google's <code>drive.file</code> scope, which limits access to files created or opened by the app. It cannot browse, read, or modify other files already in your Drive.</p>
+          <ul class="scope-list">
+            <li>Off by default — starts only after you click Connect</li>
+            <li>Writes only to a folder this extension itself creates</li>
+            <li>One-way mirror — never reads or restores back out of Drive</li>
+            <li>Disconnect anytime; already-uploaded backups stay untouched</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
 
-<h2>Why Maple Backup asks for Google Drive access</h2>
-<p>If you choose to turn on Cloud Backup, Maple Backup requests Google's <code>drive.file</code> permission — the most limited Drive scope Google offers. This is requested for exactly one purpose: to write your bookmark backup files into a folder it creates in your own Google Drive, so a copy exists outside your browser too.</p>
-<p>With this scope, Maple Backup can only see and manage the specific files it itself creates — it cannot browse, read, or modify anything else already in your Drive. It never reads anything back out of Drive either; the connection is a one-way mirror, and you can disconnect it at any time from the extension's Preferences.</p>
+  <section id="faq">
+    <div class="wrap">
+      <div class="section-head">
+        <div class="comment">faq</div>
+        <h2>Questions people actually ask</h2>
+      </div>
 
-<h2>Support</h2>
-<p>Questions, feedback, or a bug to report? Use the feedback link on the <a href="https://chromewebstore.google.com/detail/eocfcfklbhdgkilphhkcpcgaollminlf">Chrome Web Store listing</a>.</p>
+      <div class="faq-list">
+        <div class="faq-item open">
+          <button class="faq-q">Is it really free? <span class="faq-icon">+</span></button>
+          <div class="faq-a">Yes. No account, no subscription, no paid tier. Maple Backup is free to install and use, with no strings attached.</div>
+        </div>
+        <div class="faq-item">
+          <button class="faq-q">Does this replace Chrome's own bookmark sync? <span class="faq-icon">+</span></button>
+          <div class="faq-a">No — Chrome Sync keeps your CURRENT bookmarks the same across devices. Maple Backup keeps a dated HISTORY of past versions, so you can go back to what your bookmarks looked like on any given day, even if Chrome Sync itself fails or gets reset.</div>
+        </div>
+        <div class="faq-item">
+          <button class="faq-q">What happens to my data if I uninstall? <span class="faq-icon">+</span></button>
+          <div class="faq-a">Local backups are removed with the extension, same as any browser data. Anything already uploaded to your own Google Drive stays exactly where it is — Maple Backup never deletes files from your Drive on its own.</div>
+        </div>
+        <div class="faq-item">
+          <button class="faq-q">Can it read anything else in my Google Drive? <span class="faq-icon">+</span></button>
+          <div class="faq-a">No. The drive.file permission it uses is scoped to only the files it creates itself — it has no ability to see any other file or folder already in your account.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
 
-<div class="footer">Maple Backup — <a href="https://maplebackup.9pass.online/privacy.html">Privacy Policy</a> — <a href="https://maplebackup.9pass.online/terms.html">Terms of Service</a></div>
+<footer>
+  <div class="wrap footer-row">
+    <div class="footer-brand">The Maple Project — indie browser extension, est. 2016</div>
+    <div class="footer-links">
+      <a href="https://maplebackup.9pass.online/privacy.html">Privacy Policy</a>
+      <a href="https://maplebackup.9pass.online/terms.html">Terms of Service</a>
+      <a href="https://chromewebstore.google.com/detail/eocfcfklbhdgkilphhkcpcgaollminlf" target="_blank" rel="noopener">Chrome Web Store</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+  // Mobile nav toggle
+  var navToggle = document.getElementById('navToggle');
+  var mobileMenu = document.getElementById('mobileMenu');
+  navToggle.addEventListener('click', function () {
+    mobileMenu.classList.toggle('open');
+    navToggle.textContent = mobileMenu.classList.contains('open') ? '✕' : '☰';
+  });
+  mobileMenu.querySelectorAll('a').forEach(function (link) {
+    link.addEventListener('click', function () {
+      mobileMenu.classList.remove('open');
+      navToggle.textContent = '☰';
+    });
+  });
+
+  // FAQ accordion
+  document.querySelectorAll('.faq-item').forEach(function (item) {
+    item.querySelector('.faq-q').addEventListener('click', function () {
+      var wasOpen = item.classList.contains('open');
+      document.querySelectorAll('.faq-item').forEach(function (i) { i.classList.remove('open'); });
+      if (!wasOpen) item.classList.add('open');
+    });
+  });
+</script>
 
 </body>
 </html>
