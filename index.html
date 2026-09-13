@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Maple Backup</title>
-<meta name="description" content="A free Chrome extension that automatically backs up your bookmarks, with an optional copy to your own Google Drive.">
+<meta name="description" content="A free Chrome extension that automatically backs up your bookmarks, with optional cloud backup to Google Drive, OneDrive, Dropbox, Nutstore, or Koofr.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -530,7 +530,7 @@
     <div class="wrap">
       <div class="terminal-tag"><span class="dot"></span> free &amp; open by design</div>
       <h1>Bookmarks, backed up<br>automatically.</h1>
-      <p class="hero-sub">Maple Backup saves your bookmarks automatically. Backups are made at the frequency you choose — with an optional copy to your own Google Drive.</p>
+      <p class="hero-sub">Maple Backup saves your bookmarks automatically. Backups are made at the frequency you choose — with an optional copy to your own cloud storage: Google Drive, OneDrive, Dropbox, Nutstore, or Koofr.</p>
       <div class="hero-cta">
         <a class="btn btn-primary" href="https://chromewebstore.google.com/detail/eocfcfklbhdgkilphhkcpcgaollminlf" target="_blank" rel="noopener">Add to Chrome — it's free</a>
         <a class="btn btn-secondary" href="#features">See how it works</a>
@@ -555,7 +555,7 @@
       <div class="section-head">
         <div class="comment">features</div>
         <h2>Everything backup should be. Nothing it shouldn't.</h2>
-        <p class="section-desc">No account. No dashboard to configure. Your bookmarks stay on your device unless you choose to back them up to your own Google Drive.</p>
+        <p class="section-desc">No account. No dashboard to configure. Your bookmarks stay on your device unless you choose to back them up to your own cloud storage.</p>
       </div>
       <div class="grid">
         <div class="card">
@@ -575,8 +575,8 @@
         </div>
         <div class="card">
           <div class="card-icon">☁</div>
-          <h3>Optional Google Drive backup</h3>
-          <p>Turn it on and every backup is also saved to your own Drive — off by default, disconnect anytime.</p>
+          <h3>Optional cloud backup</h3>
+          <p>Connect Google Drive, OneDrive, Dropbox, Nutstore, or Koofr and every backup is also saved there — off by default, disconnect anytime.</p>
         </div>
         <div class="card">
           <div class="card-icon">🌐</div>
@@ -596,21 +596,30 @@
     <div class="wrap">
       <div class="section-head">
         <div class="comment">cloud backup</div>
-        <h2>Your Google Drive, on your terms.</h2>
-        <p class="section-desc">Cloud Backup is opt-in and uses Google's <code>drive.file</code> scope for limited Drive access.</p>
+        <h2>Your cloud storage, on your terms.</h2>
+        <p class="section-desc">Cloud Backup is opt-in, and connects to Google Drive, OneDrive, Dropbox, Nutstore, or Koofr independently — each one only ever gets the minimum access it needs.</p>
       </div>
       <div class="callout">
-        <div class="callout-badge">drive.file scope</div>
+        <div class="callout-badge">least-privilege access</div>
         <div>
-          <h3>Maple Backup only accesses the backup files it creates</h3>
-          <p>Maple Backup uses Google's <code>drive.file</code> scope, which limits access to files created or opened by the app. It cannot browse, read, or modify other files already in your Drive.</p>
+          <h3>Maple Backup only ever accesses the backup files it creates</h3>
+          <p>Each provider uses its own narrowest available permission — Google's <code>drive.file</code> scope, Microsoft's <code>Files.ReadWrite.AppFolder</code> scope, or Dropbox's dedicated App Folder access — so Maple Backup can never browse, read, or modify anything else already in your account.</p>
           <ul class="scope-list">
-            <li>Off by default — starts only after you click Connect</li>
+            <li>Off by default — starts only after you click Connect for that provider</li>
             <li>Writes only to a folder this extension itself creates</li>
-            <li>One-way mirror — never reads or restores back out of Drive</li>
+            <li>One-way mirror — never reads or restores back out of the cloud</li>
             <li>Disconnect anytime; already-uploaded backups stay untouched</li>
+            <li>Connect one provider or all five — each is independent</li>
           </ul>
         </div>
+      </div>
+
+      <div style="margin-top:32px;max-width:720px">
+        <h3 style="font-size:17px;margin:0 0 10px">Why only Google Drive, OneDrive, and Dropbox from the Chrome Web Store?</h3>
+        <p style="color:var(--text-dim);font-size:15px;margin:0 0 12px">This is a real limit of how Chrome itself works, not a choice we made. Google Drive is connected using Chrome's own built-in Google sign-in (<code>chrome.identity.getAuthToken</code>) — Chrome only allows this API to succeed for a copy of the extension installed through the official Chrome Web Store, no matter what the extension's own code does. OneDrive and Dropbox use a more generic sign-in flow, but the "callback address" their servers check against is tied to the exact copy of the extension making the request — and only the official Chrome Web Store copy's address has been registered with Microsoft and Dropbox as an approved destination. Any other copy's request would simply be refused by their servers.</p>
+        <p style="color:var(--text-dim);font-size:15px;margin:0 0 12px">Because of this, Maple Backup only shows the Connect buttons for these three providers when it detects it's genuinely running as the Chrome Web Store copy — showing them anywhere else would just lead to a guaranteed failure.</p>
+        <p style="color:var(--text-dim);font-size:15px;margin:0 0 12px">For every other copy of the extension — one loaded directly from source rather than through the Chrome Web Store — Maple Backup instead offers <strong>Nutstore (坚果云)</strong> and <strong>Koofr</strong>. Both are WebDAV-based cloud storage services authenticated with a personal "app password" you generate yourself, rather than a Google/Microsoft-style sign-in — so neither one depends on the Chrome Web Store at all, and both work identically no matter how the extension was installed.</p>
+        <p style="color:var(--text-dim);font-size:15px;margin:0">This matters because Google, Microsoft, and Dropbox's own servers are themselves unreachable in some parts of the world — mainland China being the clearest example. An install that only ever offered those three would be useless there. Nutstore specifically is a mainland-China-based service, included for exactly that reason. We don't yet publish a direct download of the non-Store copy on this site — that's planned for later.</p>
       </div>
     </div>
   </section>
@@ -633,11 +642,15 @@
         </div>
         <div class="faq-item">
           <button class="faq-q">What happens to my data if I uninstall? <span class="faq-icon">+</span></button>
-          <div class="faq-a">Local backups are removed with the extension, same as any browser data. Anything already uploaded to your own Google Drive stays exactly where it is — Maple Backup never deletes files from your Drive on its own.</div>
+          <div class="faq-a">Local backups are removed with the extension, same as any browser data. Anything already uploaded to a connected cloud provider stays exactly where it is — Maple Backup never deletes files from your cloud storage on its own.</div>
         </div>
         <div class="faq-item">
-          <button class="faq-q">Can it read anything else in my Google Drive? <span class="faq-icon">+</span></button>
-          <div class="faq-a">No. The drive.file permission it uses is scoped to only the files it creates itself — it has no ability to see any other file or folder already in your account.</div>
+          <button class="faq-q">Can it read anything else in my Google Drive, OneDrive, or Dropbox? <span class="faq-icon">+</span></button>
+          <div class="faq-a">No. Each provider is connected using its own narrowest available scope — scoped to only the files Maple Backup creates itself — so it has no ability to see any other file or folder already in your account.</div>
+        </div>
+        <div class="faq-item">
+          <button class="faq-q">Which cloud services can I connect? <span class="faq-icon">+</span></button>
+          <div class="faq-a">Google Drive, Microsoft OneDrive, Dropbox, Nutstore (坚果云), and Koofr. Connect any one, or several at once, from the Cloud Backup tab — each connection is independent, so disconnecting one never affects the others.</div>
         </div>
       </div>
     </div>
@@ -648,8 +661,8 @@
   <div class="wrap footer-row">
     <div class="footer-brand">The Maple Project — indie browser extension, est. 2016</div>
     <div class="footer-links">
-      <a href="https://maplebackup.9pass.online/privacy.html">Privacy Policy</a>
-      <a href="https://maplebackup.9pass.online/terms.html">Terms of Service</a>
+      <a href="https://maplebackup.9pass.online/privacy.html" target="_blank" rel="noopener">Privacy Policy</a>
+      <a href="https://maplebackup.9pass.online/terms.html" target="_blank" rel="noopener">Terms of Service</a>
       <a href="https://chromewebstore.google.com/detail/eocfcfklbhdgkilphhkcpcgaollminlf" target="_blank" rel="noopener">Chrome Web Store</a>
     </div>
   </div>

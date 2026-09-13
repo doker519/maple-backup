@@ -74,7 +74,7 @@
 <body>
 
 <h1>Privacy Policy — Maple Backup</h1>
-<p class="updated">Last updated: 2026-09-03</p>
+<p class="updated">Last updated: 2026-09-11</p>
 
 <p>Maple Backup is a browser extension that automatically creates local, point-in-time backups of your bookmarks. This page explains what data the extension accesses, where it goes, and what it does not do.</p>
 
@@ -86,14 +86,15 @@
 <p>Your preferences (backup frequency, display language) are stored locally on your device and are not synced by Maple Backup.</p>
 
 <h2>What we do not do</h2>
-<p>This extension has no server of its own. It does not transmit your bookmarks, backups, or any other data to the developer. There is no analytics, tracking, or advertising code of any kind. The only exception is Google Drive, described below, and only if you choose to turn it on.</p>
+<p>This extension has no server of its own. It does not transmit your bookmarks, backups, or any other data to the developer. There is no analytics, tracking, or advertising code of any kind. The only exception is Cloud Backup, described below, and only for whichever provider(s) you choose to turn on.</p>
 
-<h2>Cloud Backup (Google Drive) — optional</h2>
-<p>Maple Backup can optionally save copies of your local backups to your own Google Drive. This is off by default and only starts after you explicitly click "Connect" in Preferences and sign in with your own Google account.</p>
-<p>When Cloud Backup is on, each backup (scheduled or manual) is also uploaded to a folder named "Maple Backup" in your own Google Drive, in the same bookmarks file format as the Download button produces. If Cloud Backup is off, nothing is ever uploaded.</p>
-<p>Maple Backup uses Google's <code>drive.file</code> permission scope. It only accesses the files and folders used by Maple Backup for Cloud Backup, and does not access other files in your Google Drive.</p>
-<p>Clicking "Disconnect" stops future uploads and revokes this extension's access to your Google account. Backups already uploaded to Drive are not deleted automatically — you can remove them yourself from Google Drive at any time.</p>
-<p>Maple Backup never downloads or restores your backup contents from Google Drive. Drive is used only as a one-way backup destination — if you ever need a file back from there, you retrieve it yourself from drive.google.com.</p>
+<h2>Cloud Backup — optional</h2>
+<p>Maple Backup can optionally save copies of your local backups to a cloud storage provider of your choice: Google Drive, Microsoft OneDrive, Dropbox, Nutstore (坚果云), or Koofr. Each provider is off by default and only starts after you explicitly click "Connect" for that specific provider in Preferences — connecting one never turns on any of the others.</p>
+<p>When a provider is connected, each backup (scheduled or manual) is also uploaded to a folder named "Maple Backup" in that provider's storage, in the same bookmarks file format as the Download button produces. If no provider is connected, nothing is ever uploaded.</p>
+<p>Google Drive, OneDrive, and Dropbox are connected via that provider's own sign-in screen (OAuth) — Maple Backup never sees or stores your account password for these. Nutstore and Koofr don't offer this kind of sign-in, so instead you generate a separate "app password" in your own Nutstore/Koofr account settings and enter it directly into Maple Backup; this app password is stored locally on your device (see "Where your data is stored" above) and used only to authenticate uploads to your own Nutstore/Koofr account. It is never sent anywhere except directly to that provider's own servers.</p>
+<p>Every provider uses the narrowest access mechanism it offers: Google's <code>drive.file</code> scope, Microsoft's <code>Files.ReadWrite.AppFolder</code> scope, and Dropbox's dedicated "App Folder" access type all restrict Maple Backup to only the files and folders it creates itself — it cannot browse, read, or modify anything else already in your account. Nutstore and Koofr are accessed over WebDAV, writing only inside the one "Maple Backup" folder created for this purpose.</p>
+<p>Clicking "Disconnect" for a provider stops future uploads to it and, for Google Drive/OneDrive/Dropbox, revokes this extension's access to that account (for Nutstore/Koofr, it forgets the stored app password on this device — you can also revoke the app password itself from your Nutstore/Koofr account settings at any time). Backups already uploaded are not deleted automatically — you can remove them yourself from that provider's own storage at any time.</p>
+<p>Maple Backup never downloads or restores your backup contents from any cloud provider. Every connection is a one-way backup destination — if you ever need a file back from one, you retrieve it yourself directly from that provider's own website.</p>
 
 <h2>Downloads</h2>
 <p>When you click Download on a backup, a bookmarks file is saved to your own device's Downloads folder, only when you explicitly request it. That file stays on your device and is never sent anywhere by the extension.</p>
@@ -105,7 +106,16 @@
 <tr><td>storage</td><td>Store backup history and your preferences locally.</td></tr>
 <tr><td>alarms</td><td>Run the scheduled daily (or every N days) backup.</td></tr>
 <tr><td>unlimitedStorage</td><td>Allow backup history to grow beyond the browser's default storage limit.</td></tr>
-<tr><td>identity</td><td>Sign you in to your own Google account, only if you choose to connect Google Drive. Not used for anything else.</td></tr>
+<tr><td>identity</td><td>Sign you in to your own account, only if you choose to connect Google Drive, OneDrive, or Dropbox. Not used for anything else.</td></tr>
+</table>
+<p>Maple Backup also requests network access to each cloud provider's own servers, but only for the ones you actually connect — these are "optional" permissions Chrome asks you to approve individually the first time you click Connect for that specific provider, not upfront at install:</p>
+<table>
+<tr><th>Provider</th><th>Domains accessed</th></tr>
+<tr><td>Google Drive</td><td>googleapis.com (always requested — required for the extension to load at all, since Drive support predates this optional-permission approach)</td></tr>
+<tr><td>OneDrive</td><td>login.microsoftonline.com, graph.microsoft.com</td></tr>
+<tr><td>Dropbox</td><td>api.dropboxapi.com, content.dropboxapi.com</td></tr>
+<tr><td>Nutstore</td><td>dav.jianguoyun.com</td></tr>
+<tr><td>Koofr</td><td>app.koofr.net</td></tr>
 </table>
 
 <h2>Changes to this policy</h2>
