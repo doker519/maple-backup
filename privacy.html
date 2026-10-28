@@ -74,7 +74,7 @@
 <body>
 
 <h1>Privacy Policy — Maple Backup</h1>
-<p class="updated">Last updated: 2026-10-12</p>
+<p class="updated">Last updated: 2026-10-28</p>
 
 <p>Maple Backup is a browser extension that automatically creates local, point-in-time backups of your bookmarks. This page explains what data the extension accesses, where it goes, and what it does not do.</p>
 
@@ -89,11 +89,11 @@
 <p>This extension has no server of its own. It does not transmit your bookmarks, backups, or any other data to the developer. There is no analytics, tracking, or advertising code of any kind. The only exception is Cloud Backup, described below, and only for whichever provider(s) you choose to turn on.</p>
 
 <h2>Cloud Backup — optional</h2>
-<p>Maple Backup can optionally save copies of your local backups to a cloud storage provider of your choice: Google Drive, Dropbox, Nutstore (坚果云), or Koofr. Each provider is off by default and only starts after you explicitly click "Connect" for that specific provider in Preferences — connecting one never turns on any of the others.</p>
-<p>When a provider is connected, each backup (scheduled or manual) is also uploaded to a folder named "Maple Backup" in that provider's storage, in the same bookmarks file format as the Download button produces. If no provider is connected, nothing is ever uploaded.</p>
-<p>Google Drive and Dropbox are connected via that provider's own sign-in screen (OAuth) — Maple Backup never sees or stores your account password for these. Nutstore and Koofr don't offer this kind of sign-in, so instead you generate a separate "app password" in your own Nutstore/Koofr account settings and enter it directly into Maple Backup; this app password is stored locally on your device (see "Where your data is stored" above) and used only to authenticate uploads to your own Nutstore/Koofr account. It is never sent anywhere except directly to that provider's own servers.</p>
-<p>Every provider uses the narrowest access mechanism it offers: Google's <code>drive.file</code> scope and Dropbox's dedicated "App Folder" access type both restrict Maple Backup to only the files and folders it creates itself — it cannot browse, read, or modify anything else already in your account. Nutstore and Koofr are accessed over WebDAV, writing only inside the one "Maple Backup" folder created for this purpose.</p>
-<p>Clicking "Disconnect" for a provider stops future uploads to it and, for Google Drive/Dropbox, revokes this extension's access to that account (for Nutstore/Koofr, it forgets the stored app password on this device — you can also revoke the app password itself from your Nutstore/Koofr account settings at any time). Backups already uploaded are not deleted automatically — you can remove them yourself from that provider's own storage at any time.</p>
+<p>Maple Backup can optionally save copies of your local backups to Google Drive, Dropbox, pCloud, Nutstore (坚果云), or Koofr. The Chrome Web Store build offers Google Drive, Dropbox, and pCloud; a copy loaded directly from source offers Nutstore and Koofr. Google Drive backup requires Google Chrome; Dropbox and pCloud backup work in Chrome, Edge, and other compatible browsers. Each provider is off by default and only starts after you explicitly click "Connect" for that specific provider in the Cloud Backup tab — connecting one never turns on any of the others.</p>
+<p>When a provider is connected, Maple Backup attempts to upload copies of new local backups as HTML bookmark files. Uploads are normally limited to once per hour per provider; a scheduled backup gets a follow-up check after 30 minutes to retry failed uploads once. Network problems or account authorization issues can prevent uploads. Files are saved in the provider's Maple Backup folder; in pCloud, this is the app-specific folder under Applications. If no provider is connected, nothing is uploaded.</p>
+<p>Google Drive, Dropbox, and pCloud are connected via the provider's own sign-in screen (OAuth) — Maple Backup never sees or stores your account password for these. Account identifiers, folder references, and any OAuth tokens retained by the extension are stored locally on your device. Nutstore and Koofr connections use a separate "app password" that you generate in your own account settings and enter into Maple Backup; this app password is stored locally and used only to authenticate requests directly to that provider's servers.</p>
+<p>Google Drive uses the <code>drive.file</code> scope, Dropbox uses dedicated App Folder access, and the pCloud application is configured for access to its specific app folder. These OAuth connections do not grant access to unrelated files elsewhere in your cloud storage. Nutstore and Koofr are accessed over WebDAV: Maple Backup writes backups only inside its Maple Backup folder, but the app password itself may permit broader account access. The extension may read account or folder metadata to validate a connection and locate the backup destination.</p>
+<p>Clicking "Disconnect" stops future uploads to that provider and clears its locally retained credentials. OAuth connections also attempt to invalidate the relevant token with the provider; remote invalidation can fail, for example while offline. You can remove app access in the provider's account settings. For Nutstore and Koofr, disconnecting forgets the stored app password on this device; you can also revoke that app password in the provider's settings. Backups already uploaded are not deleted automatically — you can remove them yourself from that provider's storage.</p>
 <p>Maple Backup never downloads or restores your backup contents from any cloud provider. Every connection is a one-way backup destination — if you ever need a file back from one, you retrieve it yourself directly from that provider's own website.</p>
 
 <h2>Downloads</h2>
@@ -106,16 +106,20 @@
 <tr><td>storage</td><td>Store backup history and your preferences locally.</td></tr>
 <tr><td>alarms</td><td>Run the scheduled daily (or every N days) backup.</td></tr>
 <tr><td>unlimitedStorage</td><td>Allow backup history to grow beyond the browser's default storage limit.</td></tr>
-<tr><td>identity</td><td>Sign you in to your own account, only if you choose to connect Google Drive or Dropbox. Not used for anything else.</td></tr>
+<tr><td>identity</td><td>Sign you in to your own account, only if you choose to connect Google Drive, Dropbox, or pCloud. Not used for anything else.</td></tr>
 </table>
-<p>Maple Backup also requests network access to each cloud provider's own servers, but only for the ones you actually connect — these are "optional" permissions Chrome asks you to approve individually the first time you click Connect for that specific provider, not upfront at install:</p>
+<p>Google API network access is declared at installation. Network access for Dropbox, pCloud, Nutstore, and Koofr is optional and requested when you connect that provider, if permission has not already been granted. OAuth sign-in also opens the provider's own authorization page.</p>
 <table>
 <tr><th>Provider</th><th>Domains accessed</th></tr>
-<tr><td>Google Drive</td><td>googleapis.com (always requested — required for the extension to load at all, since Drive support predates this optional-permission approach)</td></tr>
+<tr><td>Google Drive</td><td>www.googleapis.com, oauth2.googleapis.com (declared at installation)</td></tr>
 <tr><td>Dropbox</td><td>api.dropboxapi.com, content.dropboxapi.com</td></tr>
+<tr><td>pCloud</td><td>api.pcloud.com (US), eapi.pcloud.com (Europe)</td></tr>
 <tr><td>Nutstore</td><td>dav.jianguoyun.com</td></tr>
 <tr><td>Koofr</td><td>app.koofr.net</td></tr>
 </table>
+
+<h2>Chrome Web Store Limited Use</h2>
+<p>Maple Backup's use and transfer of user data comply with the <a href="https://developer.chrome.com/docs/webstore/program-policies/limited-use/">Chrome Web Store User Data Policy</a>, including the Limited Use requirements.</p>
 
 <h2>Changes to this policy</h2>
 <p>If this policy changes, the "Last updated" date above will be revised. Continued use of the extension after changes means you accept the updated policy.</p>
